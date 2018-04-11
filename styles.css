@@ -1,0 +1,27 @@
+body {
+    font-family: 'Barlow Condensed', Calibri, sans-serif;
+}
+
+.background {
+    fill: white;
+    background-color: #fff !important
+}
+.states-bundle {
+    fill: white !important;
+    background-color: #fff !important
+}
+
+path {
+    fill: #ccc;
+    stroke: #888;
+}
+
+#main {
+    width: 100%;
+    vertical-align: top;
+    overflow: hidden;
+}
+
+.center {
+	text-align: center;
+}
