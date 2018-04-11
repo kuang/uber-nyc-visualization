@@ -3,7 +3,7 @@ function parseUber(line) {
     // console.log(line);
     return {
         day: line["Day"],
-        time: line["Time"],
+        time: parseInt(line["Time"].substr(0, 1)),
         lat: parseFloat(line["Lat"]),
         long: parseFloat(line["Long"])
     };
@@ -23,8 +23,12 @@ function callback(
     uber,
     income,
 ) {
-    console.log(income);
+    console.log(uber);
     if (error) console.log(error);
+
+
+
+    //everything ha
 
 }
 
@@ -42,8 +46,8 @@ $(document).ready(function () {
 // steph attempt at mapping
 // https://bl.ocks.org/shimizu/61e271a44f9fb832b272417c0bc853a5
 
-var width = 500,
-    height = 500;
+var width = 780,
+    height = 780;
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -53,7 +57,7 @@ var projection = d3.geoAlbers()
     .center([0, 40.7])
     .rotate([74, 0])
     .translate([width / 2, height / 2])
-    .scale(65000);
+    .scale(85000);
 
 var path = d3.geoPath()
     .projection(projection);
