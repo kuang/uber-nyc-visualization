@@ -1,12 +1,80 @@
 
+var monday = {};
+var tuesday = {};
+var wednesday = {};
+var thursday = {};
+var friday = {};
+var saturday = {};
+var sunday = {};
+
+var svg, projection;
+
 function parseUber(line) {
-    // console.log(line);
-    return {
-        day: line["Day"],
-        time: parseInt(line["Time"].substr(0, 1)),
-        lat: parseFloat(line["Lat"]),
-        long: parseFloat(line["Long"])
+    var ne = [40.91525559999999, -73.70027209999999];
+    var sw = [40.4913686, -74.25908989999999];
+
+    var se_hudson = [40.661295, -74.023930];
+    var ne_hudson = [40.921274, -73.917945];
+
+    var lat = parseFloat(line["Lat"]);
+    var long = parseFloat(line["Long"]);
+    var day = line["Day"];
+    var time = parseInt(line["Time"].substr(0, 2));
+    // console.log(time);
+    var obj = {
+        // day: line["Day"],
+        time: time,
+        lat: lat,
+        long: long,
     };
+
+    //sanity check
+    if (lat < ne[0] && lat > sw[0] && long < ne[1] && long > sw[1]) {
+
+        //left of hudson check
+        if (!(lat > se_hudson[0] && long < se_hudson[1])) {
+            switch (day) {
+                case "Monday":
+                    if (!monday.hasOwnProperty(time))
+                        monday[time] = [];
+                    monday[time].push(obj);
+                    break;
+                case "Tuesday":
+                    if (!tuesday.hasOwnProperty(time))
+                        tuesday[time] = [];
+                    tuesday[time].push(obj);
+                    break;
+                case "Wednesday":
+                    if (!wednesday.hasOwnProperty(time))
+                        wednesday[time] = [];
+                    wednesday[time].push(obj);
+                    break;
+                case "Thursday":
+                    if (!thursday.hasOwnProperty(time))
+                        thursday[time] = [];
+                    thursday[time].push(obj);
+                    break;
+                case "Friday":
+                    if (!friday.hasOwnProperty(time))
+                        friday[time] = [];
+                    friday[time].push(obj);
+                    break;
+                case "Saturday":
+                    if (!saturday.hasOwnProperty(time))
+                        saturday[time] = [];
+                    saturday[time].push(obj);
+                    break;
+                case "Sunday":
+                    if (!sunday.hasOwnProperty(time))
+                        sunday[time] = [];
+                    sunday[time].push(obj);
+                    break;
+            }
+        }
+        // console.log(line);
+
+    }
+
 }
 
 function parseIncome(line) {
@@ -18,6 +86,98 @@ function parseIncome(line) {
     };
 }
 
+//day is a string, time is an int 0-23
+function graphDots(day, time) {
+    svg.selectAll("circle").remove(); //removes previous circles
+    day = day.toLowerCase();
+    switch (day) {
+        case "monday":
+            monday[time].forEach(function (d) {
+                var [cx, cy] = projection([d.long, d.lat]);
+                //console.log(cx, cy)
+                svg.append("circle")
+                    .attr("cx", cx)
+                    .attr("cy", cy)
+                    .attr("r", 1)
+                    .attr("fill", "black")
+                    .attr("opacity", 1);
+            });
+            break;
+        case "tuesday":
+            tuesday[time].forEach(function (d) {
+                var [cx, cy] = projection([d.long, d.lat]);
+                //console.log(cx, cy)
+                svg.append("circle")
+                    .attr("cx", cx)
+                    .attr("cy", cy)
+                    .attr("r", 1)
+                    .attr("fill", "black")
+                    .attr("opacity", 1);
+            });
+            break;
+        case "wednesday":
+            wednesday[time].forEach(function (d) {
+                var [cx, cy] = projection([d.long, d.lat]);
+                //console.log(cx, cy)
+                svg.append("circle")
+                    .attr("cx", cx)
+                    .attr("cy", cy)
+                    .attr("r", 1)
+                    .attr("fill", "black")
+                    .attr("opacity", 1);
+            });
+            break;
+        case "thursday":
+            thursday[time].forEach(function (d) {
+                var [cx, cy] = projection([d.long, d.lat]);
+                //console.log(cx, cy)
+                svg.append("circle")
+                    .attr("cx", cx)
+                    .attr("cy", cy)
+                    .attr("r", 1)
+                    .attr("fill", "black")
+                    .attr("opacity", 1);
+            });
+            break;
+        case "friday":
+            friday[time].forEach(function (d) {
+                var [cx, cy] = projection([d.long, d.lat]);
+                //console.log(cx, cy)
+                svg.append("circle")
+                    .attr("cx", cx)
+                    .attr("cy", cy)
+                    .attr("r", 1)
+                    .attr("fill", "black")
+                    .attr("opacity", 1);
+            });
+            break;
+        case "saturday":
+            saturday[time].forEach(function (d) {
+                var [cx, cy] = projection([d.long, d.lat]);
+                //console.log(cx, cy)
+                svg.append("circle")
+                    .attr("cx", cx)
+                    .attr("cy", cy)
+                    .attr("r", 1)
+                    .attr("fill", "black")
+                    .attr("opacity", 1);
+            });
+            break;
+        case "sunday":
+            sunday[time].forEach(function (d) {
+                var [cx, cy] = projection([d.long, d.lat]);
+                //console.log(cx, cy)
+                svg.append("circle")
+                    .attr("cx", cx)
+                    .attr("cy", cy)
+                    .attr("r", 1)
+                    .attr("fill", "black")
+                    .attr("opacity", 1);
+            });
+            break;
+    }
+
+}
 function callback(
     error,
     uber,
@@ -26,16 +186,37 @@ function callback(
     //console.log(uber);
     if (error) console.log(error);
 
-    uber.forEach(function (d){
-        var [cx, cy] = projection([d.long, d.lat]);
-        //console.log(cx, cy)
-        svg.append("circle")
-        .attr("cx", cx)
-        .attr("cy", cy)
-        .attr("r", 1)
-        .attr("fill", "black")
-        .attr("opacity", 1);
+    var width = 780,
+        height = 780;
+
+    svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    projection = d3.geoAlbers()
+        .center([0, 40.7])
+        .rotate([74, 0])
+        .translate([width / 2, height / 2])
+        .scale(85000);
+
+    var path = d3.geoPath()
+        .projection(projection);
+
+    d3.json("data/nyc.json", function (error, uk) {
+        console.log(uk);
+        console.log(uk.objects);
+        if (error) return console.error(error);
+        var subunits = topojson.feature(uk, uk.objects.nyc_zip_code_areas);
+
+        svg.append("path")
+            .datum(subunits)
+            .attr("d", path);
+
+        graphDots("tuesday", 12); //call this to graph uber dots!
+
     });
+
+
 
 
 
@@ -49,6 +230,7 @@ $(document).ready(function () {
 
     d3.queue()
         .defer(d3.csv, "data/uber-raw-data-apr14.csv", parseUber)
+        // .defer(d3.csv, "data/uber_test.csv", parseUber)
         .defer(d3.csv, "data/zipcode_income.csv", parseIncome)
         .await(callback);
 });
@@ -56,30 +238,3 @@ $(document).ready(function () {
 
 // steph attempt at mapping
 // https://bl.ocks.org/shimizu/61e271a44f9fb832b272417c0bc853a5
-
-var width = 780,
-    height = 780;
-
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
-
-var projection = d3.geoAlbers()
-    .center([0, 40.7])
-    .rotate([74, 0])
-    .translate([width / 2, height / 2])
-    .scale(85000);
-
-var path = d3.geoPath()
-    .projection(projection);
-
-d3.json("data/nyc.json", function (error, uk) {
-    console.log(uk);
-    console.log(uk.objects);
-    if (error) return console.error(error);
-    var subunits = topojson.feature(uk, uk.objects.nyc_zip_code_areas);
-
-    svg.append("path")
-        .datum(subunits)
-        .attr("d", path);
-});
