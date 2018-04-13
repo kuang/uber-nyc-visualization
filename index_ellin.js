@@ -10,15 +10,9 @@ data["friday"] = {};
 data["saturday"] = {};
 data["sunday"] = {};
 
-// var monday = {};
-// var tuesday = {};
-// var wednesday = {};
-// var thursday = {};
-// var friday = {};
-// var saturday = {};
-// var sunday = {};
+var svg, projection, selected_day, selected_time;
 
-var svg, projection;
+selected_time = 0; //testing, set to 0
 
 function parseUber(line) {
     var ne = [40.91525559999999, -73.70027209999999];
@@ -79,10 +73,13 @@ function graphDots(day, time) {
             .attr("fill", "black")
             .attr("opacity", 1);
     });
-
-
-
 }
+
+function set_selected_day(day) {
+    selected_day = day;
+    graphDots(day, selected_time);
+}
+
 function callback(
     error,
     uber,
@@ -91,10 +88,10 @@ function callback(
     //console.log(uber);
     if (error) console.log(error);
 
-    var width = 780,
-        height = 780;
+    var width = 600,
+        height = 600;
 
-    svg = d3.select("body").append("svg")
+    svg = d3.select("#map").append("svg")
         .attr("width", width)
         .attr("height", height);
 
@@ -102,7 +99,7 @@ function callback(
         .center([0, 40.7])
         .rotate([74, 0])
         .translate([width / 2, height / 2])
-        .scale(85000);
+        .scale(75000);
 
     var path = d3.geoPath()
         .projection(projection);
@@ -117,15 +114,11 @@ function callback(
             .datum(subunits)
             .attr("d", path);
 
-        graphDots("tuesday", 12); //call this to graph uber dots!
+        // graphDots("tuesday", 12); //call this to graph uber dots!
 
     });
 
 
-
-
-
-    //everything ha
 
 }
 
