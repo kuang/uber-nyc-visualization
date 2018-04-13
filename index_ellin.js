@@ -1,11 +1,22 @@
 
-var monday = {};
-var tuesday = {};
-var wednesday = {};
-var thursday = {};
-var friday = {};
-var saturday = {};
-var sunday = {};
+
+var data = {};
+
+data["monday"] = {};
+data["tuesday"] = {};
+data["wednesday"] = {};
+data["thursday"] = {};
+data["friday"] = {};
+data["saturday"] = {};
+data["sunday"] = {};
+
+// var monday = {};
+// var tuesday = {};
+// var wednesday = {};
+// var thursday = {};
+// var friday = {};
+// var saturday = {};
+// var sunday = {};
 
 var svg, projection;
 
@@ -33,43 +44,10 @@ function parseUber(line) {
 
         //left of hudson check
         if (!(lat > se_hudson[0] && long < se_hudson[1])) {
-            switch (day) {
-                case "Monday":
-                    if (!monday.hasOwnProperty(time))
-                        monday[time] = [];
-                    monday[time].push(obj);
-                    break;
-                case "Tuesday":
-                    if (!tuesday.hasOwnProperty(time))
-                        tuesday[time] = [];
-                    tuesday[time].push(obj);
-                    break;
-                case "Wednesday":
-                    if (!wednesday.hasOwnProperty(time))
-                        wednesday[time] = [];
-                    wednesday[time].push(obj);
-                    break;
-                case "Thursday":
-                    if (!thursday.hasOwnProperty(time))
-                        thursday[time] = [];
-                    thursday[time].push(obj);
-                    break;
-                case "Friday":
-                    if (!friday.hasOwnProperty(time))
-                        friday[time] = [];
-                    friday[time].push(obj);
-                    break;
-                case "Saturday":
-                    if (!saturday.hasOwnProperty(time))
-                        saturday[time] = [];
-                    saturday[time].push(obj);
-                    break;
-                case "Sunday":
-                    if (!sunday.hasOwnProperty(time))
-                        sunday[time] = [];
-                    sunday[time].push(obj);
-                    break;
-            }
+            day = day.toLowerCase();
+            if (!data[day].hasOwnProperty(time))
+                data[day][time] = [];
+            data[day][time].push(obj);
         }
         // console.log(line);
 
@@ -90,92 +68,19 @@ function parseIncome(line) {
 function graphDots(day, time) {
     svg.selectAll("circle").remove(); //removes previous circles
     day = day.toLowerCase();
-    switch (day) {
-        case "monday":
-            monday[time].forEach(function (d) {
-                var [cx, cy] = projection([d.long, d.lat]);
-                //console.log(cx, cy)
-                svg.append("circle")
-                    .attr("cx", cx)
-                    .attr("cy", cy)
-                    .attr("r", 1)
-                    .attr("fill", "black")
-                    .attr("opacity", 1);
-            });
-            break;
-        case "tuesday":
-            tuesday[time].forEach(function (d) {
-                var [cx, cy] = projection([d.long, d.lat]);
-                //console.log(cx, cy)
-                svg.append("circle")
-                    .attr("cx", cx)
-                    .attr("cy", cy)
-                    .attr("r", 1)
-                    .attr("fill", "black")
-                    .attr("opacity", 1);
-            });
-            break;
-        case "wednesday":
-            wednesday[time].forEach(function (d) {
-                var [cx, cy] = projection([d.long, d.lat]);
-                //console.log(cx, cy)
-                svg.append("circle")
-                    .attr("cx", cx)
-                    .attr("cy", cy)
-                    .attr("r", 1)
-                    .attr("fill", "black")
-                    .attr("opacity", 1);
-            });
-            break;
-        case "thursday":
-            thursday[time].forEach(function (d) {
-                var [cx, cy] = projection([d.long, d.lat]);
-                //console.log(cx, cy)
-                svg.append("circle")
-                    .attr("cx", cx)
-                    .attr("cy", cy)
-                    .attr("r", 1)
-                    .attr("fill", "black")
-                    .attr("opacity", 1);
-            });
-            break;
-        case "friday":
-            friday[time].forEach(function (d) {
-                var [cx, cy] = projection([d.long, d.lat]);
-                //console.log(cx, cy)
-                svg.append("circle")
-                    .attr("cx", cx)
-                    .attr("cy", cy)
-                    .attr("r", 1)
-                    .attr("fill", "black")
-                    .attr("opacity", 1);
-            });
-            break;
-        case "saturday":
-            saturday[time].forEach(function (d) {
-                var [cx, cy] = projection([d.long, d.lat]);
-                //console.log(cx, cy)
-                svg.append("circle")
-                    .attr("cx", cx)
-                    .attr("cy", cy)
-                    .attr("r", 1)
-                    .attr("fill", "black")
-                    .attr("opacity", 1);
-            });
-            break;
-        case "sunday":
-            sunday[time].forEach(function (d) {
-                var [cx, cy] = projection([d.long, d.lat]);
-                //console.log(cx, cy)
-                svg.append("circle")
-                    .attr("cx", cx)
-                    .attr("cy", cy)
-                    .attr("r", 1)
-                    .attr("fill", "black")
-                    .attr("opacity", 1);
-            });
-            break;
-    }
+
+    data[day][time].forEach(function (d) {
+        var [cx, cy] = projection([d.long, d.lat]);
+        //console.log(cx, cy)
+        svg.append("circle")
+            .attr("cx", cx)
+            .attr("cy", cy)
+            .attr("r", 1)
+            .attr("fill", "black")
+            .attr("opacity", 1);
+    });
+
+
 
 }
 function callback(
