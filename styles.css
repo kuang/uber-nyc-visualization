@@ -1,6 +1,13 @@
 body {
-    font-family: 'Barlow Condensed', Calibri, sans-serif;
+    font-family: 'Roboto', sans-serif;
+    /*font-family: 'Slabo 27px', serif;*/
 }
+
+h1 {
+    font-family: 'Roboto;
+}
+
+
 
 .background {
     fill: white;
@@ -11,10 +18,6 @@ body {
     background-color: #fff !important
 }
 
-path {
-    fill: #ccc;
-    stroke: #888;
-}
 
 #main {
     width: 100%;

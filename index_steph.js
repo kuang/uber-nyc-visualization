@@ -106,20 +106,20 @@ function callback(
 
     // coloring by income
     // green to white color scale
-    var colorScale = d3.scaleThreshold()
+    var colorScale = d3.scaleLinear()
         .domain([1520, 219554])
         .range(["#006600", "#ffffff"]);
+    console.log(colorScale(200000));
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
     // console.log(income);
-    // var lookup = {};
-    // income.forEach(function(d) { console.log(d); lookup[d.zipcode] = +d.income; });
-    // console.log(lookup);
+    var lookup = {};
+    income.forEach(function(d) { lookup[d.zipcode] = +d.income; });
+    console.log(lookup);
 
 
 
-    // TODO: CLOROPLETH MAPPING
     d3.json("data/nyc.json", function (error, uk) {
     // console.log(uk);
     // console.log(uk.objects);
@@ -132,8 +132,8 @@ function callback(
         .enter()
         // set properties for the new elements:
         .append("path")
-        // .attr('fill',function(d,i) { return colorScale(lookup[d.postalcode]); })
-        .attr('fill',function(d, i) { return color(i); })
+        .attr('fill',function(d, i) { console.log(lookup[d.properties.postalcode]); return colorScale(lookup[d.properties.postalcode]); })
+        // .attr('fill',function(d, i) { console.log(d + ": " + i);return color(i); })
         // .attr('fill','blue')
         .attr("class", "tract")
         .attr("d", path);
@@ -153,25 +153,4 @@ $(document).ready(function () {
         .defer(d3.csv, "data/zipcode_income.csv", parseIncome)
         .await(callback);
 });
-
-
-
-// var width = 780,
-//     height = 780;
-
-// var viewbox = "0 0 500 500";
-
-// var svg = d3.select("body").append("svg")
-//     .attr("width", width)
-//     .attr("height", height)
-//     .attr("viewbox", viewbox);
-
-// var projection = d3.geoAlbers()
-//     .center([0, 40.7])
-//     .rotate([74, 0])
-//     .translate([width / 2, height / 2])
-//     .scale(85000);
-
-// var path = d3.geoPath()
-//     .projection(projection);
 
