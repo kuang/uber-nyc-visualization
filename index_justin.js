@@ -64,7 +64,7 @@ function graphDots(day, time) {
     data[day][time].forEach(function (d) {
         var [cx, cy] = projection([d.long, d.lat]);
         //console.log(cx, cy)
-        svg.append("circle")
+        g.append("circle")
             .attr("cx", cx)
             .attr("cy", cy)
             .attr("r", 1)
@@ -124,6 +124,21 @@ function callback(
     svg.call(zoom);
 
 
+    // coloring by income
+    // green to white color scale
+    var colorScale = d3.scaleLinear()
+        .domain([1520, 219554])
+        .range(["#006600", "#ffffff"]);
+    console.log(colorScale(200000));
+
+    var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    // console.log(income);
+    var lookup = {};
+    income.forEach(function(d) { lookup[d.zipcode] = +d.income; });
+    console.log(lookup);
+
+
     d3.json("data/nyc.json", function (error, uk) {
         // console.log(uk);
         // console.log(uk.objects);
@@ -146,10 +161,26 @@ function callback(
           .attr("d", path);
 
 
-          g.append("path")
+        g.append("path")
               .datum(topojson.mesh(uk, uk.objects.nyc_zip_code_areas))
               .attr("class", "mesh")
               .attr("d", path);
+
+
+        g.selectAll(".tract")
+    // bind data to the selection
+        .data(topojson.feature(uk, uk.objects.nyc_zip_code_areas).features)
+        .enter()
+        // set properties for the new elements:
+        .append("path")
+        .attr('fill',function(d, i) { console.log(lookup[d.properties.postalcode]); return colorScale(lookup[d.properties.postalcode]); })
+        // .attr('fill',function(d, i) { console.log(d + ": " + i);return color(i); })
+        // .attr('fill','blue')
+        // .attr('fill',function(d,i) { return colorScale(lookup[d.postalcode]); })
+        //.attr('fill',function(d, i) { return color(i); })
+
+        .attr("class", "tract")
+        .attr("d", path);
 
     });
 }
