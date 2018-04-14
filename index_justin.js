@@ -13,6 +13,7 @@ data["sunday"] = {};
 var svg, projection, selected_day, selected_time, zoom, g;
 
 selected_time = 0; //testing, set to 0
+selected_day = "monday"; //default. we can at some point
 
 
 function parseUber(line) {
