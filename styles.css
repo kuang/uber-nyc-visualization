@@ -1,11 +1,8 @@
 body {
-<<<<<<< HEAD
-    /*font-family: 'Roboto', sans-serif;
-    font-family: 'Slabo 27px', serif;*/
-=======
-    font-family: 'Barlow Condensed', Calibri, sans-serif;
-    background-color: #D3D3D3;
->>>>>>> 909cc693115d5506ee62d917c4d8c7aec861fdd4
+    font-family: 'Roboto', sans-serif;
+    font-family: 'Slabo 27px', serif;
+    /*font-family: 'Barlow Condensed', Calibri, sans-serif;
+    background-color: #D3D3D3;*/
 }
 
 h1 {
@@ -23,13 +20,6 @@ h1 {
     background-color: #fff !important
 }
 
-<<<<<<< HEAD
-=======
-/*path {
-    fill: #ccc;
-    stroke: #888;
-}*/
->>>>>>> 909cc693115d5506ee62d917c4d8c7aec861fdd4
 
 #main {
     width: 100%;
