@@ -132,11 +132,9 @@ function callback(
         .enter()
         // set properties for the new elements:
         .append("path")
+        .attr('fill',function(d, i) { console.log(lookup[d.properties.postalcode]); return colorScale(lookup[d.properties.postalcode]); })
+        //.attr('fill',function(d, i) { return color(i); })
 
-        .attr('fill',function(d, i) { console.log(); return colorScale(lookup[d.properties.postalcode]); })
-        // .attr('fill',function(d, i) { console.log(d + ": " + i);return color(i); })
-        // .attr('fill','blue')
-        // .attr('fill',function(d,i) { return colorScale(lookup[d.postalcode]); })
         .attr("class", "tract")
         .attr("d", path);
 

@@ -10,17 +10,14 @@ data["friday"] = {};
 data["saturday"] = {};
 data["sunday"] = {};
 
-var svg, projection, selected_day, selected_time;
-
-// var slider = document.getElementById('time');
+var svg, projection, selected_day, selected_time, zoom, g;
 
 selected_time = 0; //testing, set to 0
+selected_day = "monday"; //default. we can at some point
+
 
 function parseUber(line) {
-    // slider.onchange = function(){
-    //     selected_time = slider.value;
-    //     console.log(selected_time);
-    // }
+
     var ne = [40.91525559999999, -73.70027209999999];
     var sw = [40.4913686, -74.25908989999999];
 
@@ -31,9 +28,8 @@ function parseUber(line) {
     var long = parseFloat(line["Long"]);
     var day = line["Day"];
     var time = parseInt(line["Time"].substr(0, 2));
-    // console.log(time);
+
     var obj = {
-        // day: line["Day"],
         time: time,
         lat: lat,
         long: long,
@@ -41,7 +37,6 @@ function parseUber(line) {
 
     //sanity check
     if (lat < ne[0] && lat > sw[0] && long < ne[1] && long > sw[1]) {
-
         //left of hudson check
         if (!(lat > se_hudson[0] && long < se_hudson[1])) {
             day = day.toLowerCase();
@@ -50,13 +45,11 @@ function parseUber(line) {
             data[day][time].push(obj);
         }
         // console.log(line);
-
     }
 
 }
 
 function parseIncome(line) {
-    // console.log(line);
     return {
         zipcode: line["Zip"],
         income: parseInt(line["Median"]),
@@ -72,7 +65,7 @@ function graphDots(day, time) {
     data[day][time].forEach(function (d) {
         var [cx, cy] = projection([d.long, d.lat]);
         //console.log(cx, cy)
-        svg.append("circle")
+        g.append("circle")
             .attr("cx", cx)
             .attr("cy", cy)
             .attr("r", 1)
@@ -100,14 +93,17 @@ function callback(
     if (error) console.log(error);
 
     var width = 600,
-        height = 600;
+        height = 600,
+        active = d3.select(null);
+
+    var zoom = d3.zoom()
+    .scaleExtent([1, 8])
+    .on("zoom", zoomed);
+
 
     svg = d3.select("#map").append("svg")
         .attr("width", width)
-        .attr("height", height)
-        .call(d3.zoom().on("zoom", function(){
-            svg.attr("transform", d3.event.transform)
-        }));
+        .attr("height", height);
 
     projection = d3.geoAlbers()
         .center([0, 40.7])
@@ -118,22 +114,113 @@ function callback(
     var path = d3.geoPath()
         .projection(projection);
 
+    g = svg.append("g");
+
+
+    svg.append("rect")
+        .attr("class", "overlay")
+        .attr("width", width)
+        .attr("height", height);
+
+    svg.call(zoom);
+
+
+    // coloring by income
+    // green to white color scale
+    var colorScale = d3.scaleLinear()
+        .domain([1520, 219554])
+        .range(["#006600", "#ffffff"]);
+    console.log(colorScale(200000));
+
+    var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    // console.log(income);
+    var lookup = {};
+    income.forEach(function(d) { lookup[d.zipcode] = +d.income; });
+    console.log(lookup);
+
+
     d3.json("data/nyc.json", function (error, uk) {
-        console.log(uk);
-        console.log(uk.objects);
+        // console.log(uk);
+        // console.log(uk.objects);
         if (error) return console.error(error);
         var subunits = topojson.feature(uk, uk.objects.nyc_zip_code_areas);
 
-        svg.append("path")
-            .datum(subunits)
-            .attr("d", path);
+        // g.selectAll("path")
+        // .data()
 
-        // graphDots("tuesday", 12); //call this to graph uber dots!
+        g.append("path")
+            .datum(subunits)
+            .attr("d", path)
+            .attr("class", "feature")
+            .on("click", clicked);
+
+
+        g.append("path")
+          .datum(topojson.merge(uk, uk.objects.nyc_zip_code_areas.geometries))
+          .attr("class", "land")
+          .attr("d", path);
+
+
+        g.append("path")
+              .datum(topojson.mesh(uk, uk.objects.nyc_zip_code_areas))
+              .attr("class", "mesh")
+              .attr("d", path);
+
+
+        g.selectAll(".tract")
+    // bind data to the selection
+        .data(topojson.feature(uk, uk.objects.nyc_zip_code_areas).features)
+        .enter()
+        // set properties for the new elements:
+        .append("path")
+        .attr('fill',function(d, i) { console.log(lookup[d.properties.postalcode]); return colorScale(lookup[d.properties.postalcode]); })
+        // .attr('fill',function(d, i) { console.log(d + ": " + i);return color(i); })
+        // .attr('fill','blue')
+        // .attr('fill',function(d,i) { return colorScale(lookup[d.postalcode]); })
+        //.attr('fill',function(d, i) { return color(i); })
+
+        .attr("class", "tract")
+        .attr("d", path);
 
     });
+}
 
 
+function clicked(d) {
+  if (active.node() === this) return reset();
+  active.classed("active", false);
+  active = d3.select(this).classed("active", true);
 
+  var bounds = path.bounds(d),
+      dx = bounds[1][0] - bounds[0][0],
+      dy = bounds[1][1] - bounds[0][1],
+      x = (bounds[0][0] + bounds[1][0]) / 2,
+      y = (bounds[0][1] + bounds[1][1]) / 2,
+      scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / width, dy / height))),
+      translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+  svg.transition()
+      .duration(750)
+      // .call(zoom.translate(translate).scale(scale).event); // not in d3 v4
+      .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) ); // updated for d3 v4
+}
+
+
+function reset() {
+  active.classed("active", false);
+  active = d3.select(null);
+
+  svg.transition()
+      .duration(750)
+      // .call( zoom.transform, d3.zoomIdentity.translate(0, 0).scale(1) ); // not in d3 v4
+      .call( zoom.transform, d3.zoomIdentity ); // updated for d3 v4
+}
+
+function zoomed() {
+  g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
+  // g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")"); // not in d3 v4
+  g.attr("transform", d3.event.transform); // updated for d3 v4
 }
 
 // To make sure that elements don't generate before the DOM has loaded.
@@ -142,11 +229,8 @@ $(document).ready(function () {
 
     d3.queue()
         .defer(d3.csv, "data/uber-raw-data-apr14.csv", parseUber)
-        // .defer(d3.csv, "data/uber_test.csv", parseUber)
         .defer(d3.csv, "data/zipcode_income.csv", parseIncome)
         .await(callback);
 });
 
 
-// steph attempt at mapping
-// https://bl.ocks.org/shimizu/61e271a44f9fb832b272417c0bc853a5

@@ -6,13 +6,30 @@ body {
 }
 
 h1 {
-    font-family: 'Roboto;
+    font-family: 'Roboto';
 }
 
+<<<<<<< HEAD
 path {
     stroke: white;
     stroke-width: 1;
 
+=======
+.mesh {
+  fill: none;
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+svg {
+    background: #eee;
+>>>>>>> 723813374a9b60235875d4da3a2035fc9fe5150e
 }
 
 .background {
