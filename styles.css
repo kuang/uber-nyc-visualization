@@ -6,10 +6,24 @@ body {
 }
 
 h1 {
-    font-family: 'Roboto;
+    font-family: 'Roboto';
 }
 
+.mesh {
+  fill: none;
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+svg {
+    background: #eee;
+}
 
 .background {
     fill: white;
