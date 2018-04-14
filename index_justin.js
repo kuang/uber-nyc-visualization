@@ -1,4 +1,5 @@
 
+
 var data = {};
 
 data["monday"] = {};
@@ -11,9 +12,15 @@ data["sunday"] = {};
 
 var svg, projection, selected_day, selected_time;
 
+// var slider = document.getElementById('time');
+
 selected_time = 0; //testing, set to 0
 
 function parseUber(line) {
+    // slider.onchange = function(){
+    //     selected_time = slider.value;
+    //     console.log(selected_time);
+    // }
     var ne = [40.91525559999999, -73.70027209999999];
     var sw = [40.4913686, -74.25908989999999];
 
@@ -79,13 +86,17 @@ function set_selected_day(day) {
     graphDots(day, selected_time);
 }
 
+function set_selected_time(time){
+    selected_time = time
+    graphDots(selected_day, selected_time);
+}
 
 function callback(
     error,
     uber,
     income,
 ) {
-    // console.log(uber);
+    //console.log(uber);
     if (error) console.log(error);
 
     var width = 600,
@@ -93,7 +104,10 @@ function callback(
 
     svg = d3.select("#map").append("svg")
         .attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
+        .call(d3.zoom().on("zoom", function(){
+            svg.attr("transform", d3.event.transform)
+        }));
 
     projection = d3.geoAlbers()
         .center([0, 40.7])
@@ -104,47 +118,20 @@ function callback(
     var path = d3.geoPath()
         .projection(projection);
 
-    // coloring by income
-    // green to white color scale
-    var colorScale = d3.scaleLinear()
-        .domain([1520, 219554])
-        .range(["#006600", "#ffffff"]);
-    console.log(colorScale(200000));
-
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
-
-    // console.log(income);
-    var lookup = {};
-    income.forEach(function(d) { lookup[d.zipcode] = +d.income; });
-    console.log(lookup);
-
-
-
     d3.json("data/nyc.json", function (error, uk) {
-    // console.log(uk);
-    // console.log(uk.objects);
-    if (error) return console.error(error);
-    var subunits = topojson.feature(uk, uk.objects.nyc_zip_code_areas);
+        console.log(uk);
+        console.log(uk.objects);
+        if (error) return console.error(error);
+        var subunits = topojson.feature(uk, uk.objects.nyc_zip_code_areas);
 
-    svg.selectAll(".tract")
-    // bind data to the selection
-        .data(topojson.feature(uk, uk.objects.nyc_zip_code_areas).features)
-        .enter()
-        // set properties for the new elements:
-        .append("path")
-<<<<<<< HEAD
-        .attr('fill',function(d, i) { console.log(lookup[d.properties.postalcode]); return colorScale(lookup[d.properties.postalcode]); })
-        // .attr('fill',function(d, i) { console.log(d + ": " + i);return color(i); })
-        // .attr('fill','blue')
-=======
-        // .attr('fill',function(d,i) { return colorScale(lookup[d.postalcode]); })
-        //.attr('fill',function(d, i) { return color(i); })
-        .attr('fill','blue')
->>>>>>> 909cc693115d5506ee62d917c4d8c7aec861fdd4
-        .attr("class", "tract")
-        .attr("d", path);
+        svg.append("path")
+            .datum(subunits)
+            .attr("d", path);
 
-});
+        // graphDots("tuesday", 12); //call this to graph uber dots!
+
+    });
+
 
 
 }
@@ -160,3 +147,6 @@ $(document).ready(function () {
         .await(callback);
 });
 
+
+// steph attempt at mapping
+// https://bl.ocks.org/shimizu/61e271a44f9fb832b272417c0bc853a5
