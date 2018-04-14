@@ -106,17 +106,17 @@ function callback(
 
     // coloring by income
     // green to white color scale
+    // TODO 
     var colorScale = d3.scaleLinear()
         .domain([1520, 219554])
-        .range(["#006600", "#ffffff"]);
-    console.log(colorScale(200000));
+        .range(["#003200", "#ffffff"]);
 
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
+    // var color = d3.scaleOrdinal(d3.schemeCategory20);
 
     // console.log(income);
     var lookup = {};
     income.forEach(function(d) { lookup[d.zipcode] = +d.income; });
-    console.log(lookup);
+    // console.log(income);
 
 
 
@@ -132,15 +132,11 @@ function callback(
         .enter()
         // set properties for the new elements:
         .append("path")
-<<<<<<< HEAD
-        .attr('fill',function(d, i) { console.log(lookup[d.properties.postalcode]); return colorScale(lookup[d.properties.postalcode]); })
+
+        .attr('fill',function(d, i) { console.log(); return colorScale(lookup[d.properties.postalcode]); })
         // .attr('fill',function(d, i) { console.log(d + ": " + i);return color(i); })
         // .attr('fill','blue')
-=======
         // .attr('fill',function(d,i) { return colorScale(lookup[d.postalcode]); })
-        //.attr('fill',function(d, i) { return color(i); })
-        .attr('fill','blue')
->>>>>>> 909cc693115d5506ee62d917c4d8c7aec861fdd4
         .attr("class", "tract")
         .attr("d", path);
 

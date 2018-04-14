@@ -9,7 +9,11 @@ h1 {
     font-family: 'Roboto;
 }
 
+path {
+    stroke: white;
+    stroke-width: 1;
 
+}
 
 .background {
     fill: white;
