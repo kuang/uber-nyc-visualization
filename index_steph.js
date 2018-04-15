@@ -105,23 +105,21 @@ function callback(
         .projection(projection);
 
     // coloring by income
-    // green to white color scale
-    // TODO 
-    var incomeColors = ["#ffffff", "#323299", "#329932"];
+    var incomeColors = ["#ffffff", "#5aad5a", "#1e5b1e"];
     var colorScale = d3.scaleLinear().domain([18024, 85019, 219554]).range(incomeColors);
 
-    // var color = d3.scaleOrdinal(d3.schemeCategory20);
+    // tool tips
+    var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
-    // console.log(income);
     var lookup = {};
     income.forEach(function (d) { lookup[d.zipcode] = +d.income; });
-    // console.log(income);
-
+    // console.log(income[]);
 
 
     d3.json("data/nyc.json", function (error, uk) {
-        // console.log(uk);
-        // console.log(uk.objects);
+
         if (error) return console.error(error);
         var subunits = topojson.feature(uk, uk.objects.nyc_zip_code_areas);
 
@@ -131,12 +129,30 @@ function callback(
             .enter()
             // set properties for the new elements:
             .append("path")
-            .attr('fill', function (d, i) { console.log(lookup[d.properties.postalcode]); return colorScale(lookup[d.properties.postalcode]); })
-            //.attr('fill',function(d, i) { return color(i); })
-
+            .attr('fill', function (d, i) { 
+                if(lookup[d.properties.postalcode] == undefined) { 
+                    return "white";
+                } else {
+                    console.log(lookup[i]); 
+                    return colorScale(lookup[d.properties.postalcode]);
+                }
+            })
             .attr("class", "tract")
-            .attr("d", path);
+            .attr("d", path)
 
+            .on("mouseover", function(d) {
+               div.transition()
+                 .duration(200)
+                 .style("opacity", .9);
+               div.html(lookup[d.properties.postalcode])
+                 .style("left", (d3.event.pageX) + "px")
+                 .style("top", (d3.event.pageY - 28) + "px");
+               })
+             .on("mouseout", function(d) {
+               div.transition()
+                 .duration(500)
+                 .style("opacity", 0);
+               });
     });
 
 
@@ -149,7 +165,7 @@ $(document).ready(function () {
     d3.queue()
         .defer(d3.csv, "data/uber-raw-data-apr14.csv", parseUber)
         // .defer(d3.csv, "data/uber_test.csv", parseUber)
-        .defer(d3.csv, "data/zipcode_income.csv", parseIncome)
+        .defer(d3.csv, "data/zip_medians.csv", parseIncome)
         .await(callback);
 });
 
