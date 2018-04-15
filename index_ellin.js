@@ -10,8 +10,11 @@ data["friday"] = {};
 data["saturday"] = {};
 data["sunday"] = {};
 
-var svg, projection, selected_day, selected_time;
+var map_svg, plot_svg, projection, selected_day, selected_time;
+var xScale = d3.scaleLinear().domain([0, 23]).range([0, 300]);
 
+
+selected_day = "monday";
 selected_time = 0; //testing, set to 0
 
 function parseUber(line) {
@@ -49,6 +52,7 @@ function parseUber(line) {
 
 }
 
+
 function parseIncome(line) {
     // console.log(line);
     return {
@@ -60,17 +64,17 @@ function parseIncome(line) {
 
 //day is a string, time is an int 0-23
 function graphDots(day, time) {
-    svg.selectAll("circle").remove(); //removes previous circles
+    map_svg.selectAll("circle").remove(); //removes previous circles
     day = day.toLowerCase();
 
     data[day][time].forEach(function (d) {
         var [cx, cy] = projection([d.long, d.lat]);
         //console.log(cx, cy)
-        svg.append("circle")
+        map_svg.append("circle")
             .attr("cx", cx)
             .attr("cy", cy)
             .attr("r", 1)
-            .attr("fill", "black")
+            .attr("fill", "white")
             .attr("opacity", 1);
     });
 }
@@ -78,7 +82,57 @@ function graphDots(day, time) {
 function set_selected_day(day) {
     selected_day = day;
     graphDots(day, selected_time);
+    graphTime(selected_day);
+
 }
+
+function graphTime(day) {
+    plot_svg.selectAll("*").remove();
+
+    var max = Number.MIN_SAFE_INTEGER;
+    var min = Number.MAX_SAFE_INTEGER;
+    var time_lengths = [];
+    for (var i = 0; i < 24; i++) {
+        var curr_len = data[day][i].length;
+        if (curr_len > max)
+            max = curr_len;
+        if (curr_len < min)
+            min = curr_len;
+        time_lengths.push({
+            hour: i,
+            number: curr_len
+        });
+    }
+    // console.log(data[day]);
+    // console.log(time_lengths);
+    var yScale = d3.scaleLinear().domain([min, max]).range([300, 0]);
+    var lineGenerator = d3.area()
+        .x(d => xScale(d.hour))
+        .y(d => yScale(d.number));
+
+    plot_svg.append("path")
+        .attr("d", lineGenerator(time_lengths))
+        .style("stroke", "#000000")
+        .style("fill", "none");
+
+    // Add axes
+    plot_svg.append("g").call(d3.axisLeft(yScale)).attr("transform", "translate(0,0)");
+    plot_svg.append("g").call(d3.axisBottom(xScale)).attr("transform", "translate(0," + (300) + ")");
+
+    plot_svg.append("text").attr("transform", "rotate(270) translate(-170, -50)").text("Number of Pickups");
+    plot_svg.append("text").attr("transform", "translate(150, 340)").text("Hour");
+
+    plot_svg.selectAll("dot").data(time_lengths)
+        .enter().append("circle")
+        .attr("r", 4)
+        .attr("cx", function (d) { return xScale(d.hour) })
+        .attr("cy", function (d) { return yScale(d.number) })
+        .style("fill", function (d) {
+            return "#00c4c8";
+        })
+
+}
+
 
 function callback(
     error,
@@ -88,34 +142,47 @@ function callback(
     //console.log(uber);
     if (error) console.log(error);
 
-    var width = 600,
-        height = 600;
+    var map_width = 600,
+        map_height = 600;
 
-    svg = d3.select("#map").append("svg")
-        .attr("width", width)
-        .attr("height", height);
+    var plot_width = 400,
+        plot_height = 400;
+
+    var padding = 70;
+
+
+    map_svg = d3.select("#map").append("svg")
+        .attr("width", map_width)
+        .attr("height", map_height);
+
+    plot_svg = d3.select("#time").append("svg")
+        .attr("height", 300 + 2 * padding).attr("width", 300 + 2 * padding)
+        .append("g").attr("transform", "translate(" + padding + "," + padding + ")");
+
+
+
 
     projection = d3.geoAlbers()
         .center([0, 40.7])
         .rotate([74, 0])
-        .translate([width / 2, height / 2])
+        .translate([map_width / 2, map_height / 2])
         .scale(75000);
 
     var path = d3.geoPath()
         .projection(projection);
 
     d3.json("data/nyc.json", function (error, uk) {
-        console.log(uk);
-        console.log(uk.objects);
+        // console.log(uk);
+        // console.log(uk.objects);
         if (error) return console.error(error);
         var subunits = topojson.feature(uk, uk.objects.nyc_zip_code_areas);
 
-        svg.append("path")
+        map_svg.append("path")
             .datum(subunits)
             .attr("d", path);
 
         // graphDots("tuesday", 12); //call this to graph uber dots!
-
+        // graphTime(selected_day);
     });
 
 
@@ -124,8 +191,6 @@ function callback(
 
 // To make sure that elements don't generate before the DOM has loaded.
 $(document).ready(function () {
-    var svg = d3.select("svg");
-
     d3.queue()
         .defer(d3.csv, "data/uber-raw-data-apr14.csv", parseUber)
         // .defer(d3.csv, "data/uber_test.csv", parseUber)

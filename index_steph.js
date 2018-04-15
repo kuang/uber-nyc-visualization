@@ -115,30 +115,30 @@ function callback(
 
     // console.log(income);
     var lookup = {};
-    income.forEach(function(d) { lookup[d.zipcode] = +d.income; });
+    income.forEach(function (d) { lookup[d.zipcode] = +d.income; });
     // console.log(income);
 
 
 
     d3.json("data/nyc.json", function (error, uk) {
-    // console.log(uk);
-    // console.log(uk.objects);
-    if (error) return console.error(error);
-    var subunits = topojson.feature(uk, uk.objects.nyc_zip_code_areas);
+        // console.log(uk);
+        // console.log(uk.objects);
+        if (error) return console.error(error);
+        var subunits = topojson.feature(uk, uk.objects.nyc_zip_code_areas);
 
-    svg.selectAll(".tract")
-    // bind data to the selection
-        .data(topojson.feature(uk, uk.objects.nyc_zip_code_areas).features)
-        .enter()
-        // set properties for the new elements:
-        .append("path")
-        .attr('fill',function(d, i) { console.log(lookup[d.properties.postalcode]); return colorScale(lookup[d.properties.postalcode]); })
-        //.attr('fill',function(d, i) { return color(i); })
+        svg.selectAll(".tract")
+            // bind data to the selection
+            .data(topojson.feature(uk, uk.objects.nyc_zip_code_areas).features)
+            .enter()
+            // set properties for the new elements:
+            .append("path")
+            .attr('fill', function (d, i) { console.log(lookup[d.properties.postalcode]); return colorScale(lookup[d.properties.postalcode]); })
+            //.attr('fill',function(d, i) { return color(i); })
 
-        .attr("class", "tract")
-        .attr("d", path);
+            .attr("class", "tract")
+            .attr("d", path);
 
-});
+    });
 
 
 }
