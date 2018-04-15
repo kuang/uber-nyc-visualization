@@ -15,7 +15,7 @@ var xScale = d3.scaleLinear().domain([0, 23]).range([0, 300]);
 
 
 selected_day = "monday";
-selected_time = 0; //testing, set to 0
+selected_time = 12; //testing, set to 0
 
 function parseUber(line) {
     var ne = [40.91525559999999, -73.70027209999999];
@@ -28,9 +28,7 @@ function parseUber(line) {
     var long = parseFloat(line["Long"]);
     var day = line["Day"];
     var time = parseInt(line["Time"].substr(0, 2));
-    // console.log(time);
     var obj = {
-        // day: line["Day"],
         time: time,
         lat: lat,
         long: long,
@@ -69,7 +67,6 @@ function graphDots(day, time) {
 
     data[day][time].forEach(function (d) {
         var [cx, cy] = projection([d.long, d.lat]);
-        //console.log(cx, cy)
         map_svg.append("circle")
             .attr("cx", cx)
             .attr("cy", cy)
@@ -84,6 +81,12 @@ function set_selected_day(day) {
     graphDots(day, selected_time);
     graphTime(selected_day);
 
+}
+
+function set_selected_time(time) {
+    selected_time = time;
+    graphDots(selected_day, selected_time);
+    graphTime(selected_day);
 }
 
 function graphTime(day) {
@@ -103,8 +106,6 @@ function graphTime(day) {
             number: curr_len
         });
     }
-    // console.log(data[day]);
-    // console.log(time_lengths);
     var yScale = d3.scaleLinear().domain([min, max]).range([300, 0]);
     var lineGenerator = d3.area()
         .x(d => xScale(d.hour))
@@ -128,8 +129,10 @@ function graphTime(day) {
         .attr("cx", function (d) { return xScale(d.hour) })
         .attr("cy", function (d) { return yScale(d.number) })
         .style("fill", function (d) {
-            return "#00c4c8";
+            if (d.hour == selected_time) return "#00c4c8";
+            return "#ff6661";
         })
+
 
 }
 
