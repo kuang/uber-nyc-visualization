@@ -70,7 +70,7 @@ function graphDots(day, time) {
             .attr("cx", cx)
             .attr("cy", cy)
             .attr("r", 1)
-            .attr("fill", "black")
+            .attr("fill", "orange")
             .attr("opacity", 1);
     });
 }
@@ -81,7 +81,7 @@ function set_selected_day(day) {
     graphTime(selected_day);
 }
 
-function set_selected_time(time){
+function set_selected_time(time) {
     selected_time = time
     graphDots(selected_day, selected_time);
     graphTime(selected_day);
@@ -124,12 +124,16 @@ function graphTime(day) {
 
     plot_svg.selectAll("dot").data(time_lengths)
         .enter().append("circle")
-        .attr("r", 4)
+        .attr("r", function (d) {
+            if (d.hour == selected_time) return 8;
+            return 4;
+
+        })
         .attr("cx", function (d) { return xScale(d.hour) })
         .attr("cy", function (d) { return yScale(d.number) })
         .style("fill", function (d) {
-            if (d.hour == selected_time) return "#00c4c8";
-            return "#ff6661";
+            if (d.hour == selected_time) return "#ff6661";
+            return "#00c4c8";
         })
 
 
@@ -155,8 +159,8 @@ function callback(
 
 
     var zoom = d3.zoom()
-    .scaleExtent([1, 8])
-    .on("zoom", zoomed);
+        .scaleExtent([1, 8])
+        .on("zoom", zoomed);
 
 
     map_svg = d3.select("#map").append("svg")
@@ -194,7 +198,7 @@ function callback(
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
     var lookup = {};
-    income.forEach(function(d) { lookup[d.zipcode] = +d.income; });
+    income.forEach(function (d) { lookup[d.zipcode] = +d.income; });
     // console.log(lookup);
 
     plot_svg = d3.select("#time").append("svg")
@@ -217,63 +221,67 @@ function callback(
 
 
         g.append("path")
-          .datum(topojson.merge(uk, uk.objects.nyc_zip_code_areas.geometries))
-          .attr("class", "land")
-          .attr("d", path);
+            .datum(topojson.merge(uk, uk.objects.nyc_zip_code_areas.geometries))
+            .attr("class", "land")
+            .attr("d", path);
 
 
         g.append("path")
-              .datum(topojson.mesh(uk, uk.objects.nyc_zip_code_areas))
-              .attr("class", "mesh")
-              .attr("d", path);
+            .datum(topojson.mesh(uk, uk.objects.nyc_zip_code_areas))
+            .attr("class", "mesh")
+            .attr("d", path);
 
 
         g.selectAll(".tract")
-        .data(topojson.feature(uk, uk.objects.nyc_zip_code_areas).features)
-        .enter()
-        .append("path")
-        .attr('fill',function(d, i) {return colorScale(lookup[d.properties.postalcode]); })
-        .attr("class", "tract")
-        .attr("d", path);
+            .data(topojson.feature(uk, uk.objects.nyc_zip_code_areas).features)
+            .enter()
+            .append("path")
+            .attr('fill', function (d, i) { return colorScale(lookup[d.properties.postalcode]); })
+            .attr("class", "tract")
+            .attr("d", path);
+        graphTime(selected_day);
+        graphDots(selected_day, selected_time);
+
 
     });
+
 }
 
 
 function clicked(d) {
-  if (active.node() === this) return reset();
-  active.classed("active", false);
-  active = d3.select(this).classed("active", true);
+    if (active.node() === this) return reset();
+    active.classed("active", false);
+    active = d3.select(this).classed("active", true);
 
-  var bounds = path.bounds(d),
-      dx = bounds[1][0] - bounds[0][0],
-      dy = bounds[1][1] - bounds[0][1],
-      x = (bounds[0][0] + bounds[1][0]) / 2,
-      y = (bounds[0][1] + bounds[1][1]) / 2,
-      scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / width, dy / height))),
-      translate = [width / 2 - scale * x, height / 2 - scale * y];
+    var bounds = path.bounds(d),
+        dx = bounds[1][0] - bounds[0][0],
+        dy = bounds[1][1] - bounds[0][1],
+        x = (bounds[0][0] + bounds[1][0]) / 2,
+        y = (bounds[0][1] + bounds[1][1]) / 2,
+        scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / width, dy / height))),
+        translate = [width / 2 - scale * x, height / 2 - scale * y];
 
-  map_svg.transition()
-      .duration(750)
-      // .call(zoom.translate(translate).scale(scale).event); // not in d3 v4
-      .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) ); // updated for d3 v4
+    map_svg.transition()
+        .duration(750)
+        // .call(zoom.translate(translate).scale(scale).event); // not in d3 v4
+        .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)); // updated for d3 v4
 }
 
 
 function reset() {
-  active.classed("active", false);
-  active = d3.select(null);
+    active.classed("active", false);
+    active = d3.select(null);
 
-  map_svg.transition()
-      .duration(750)
-      // .call( zoom.transform, d3.zoomIdentity.translate(0, 0).scale(1) ); // not in d3 v4
-      .call( zoom.transform, d3.zoomIdentity ); // updated for d3 v4
+    map_svg.transition()
+        .duration(750)
+        // .call( zoom.transform, d3.zoomIdentity.translate(0, 0).scale(1) ); // not in d3 v4
+        .call(zoom.transform, d3.zoomIdentity); // updated for d3 v4
 }
 
 function zoomed() {
-  g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
-  // g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")"); // not in d3 v4
-  g.attr("transform", d3.event.transform); // updated for d3 v4
+    g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
+    // g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")"); // not in d3 v4
+    g.attr("transform", d3.event.transform); // updated for d3 v4
 }
 
 // To make sure that elements don't generate before the DOM has loaded.
