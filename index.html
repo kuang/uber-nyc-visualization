@@ -28,7 +28,9 @@
             </div>
             <div class="col-lg-4">
                 <br>
-                <h2 class='center'>Edit Date/Time</h2>
+                <h2 class='center'>Ride Statistics Per Day</h2>
+                <div id="time"></div>
+                <p> Choose day of week:</p>
                 <button class = "button1" type="button" onclick="set_selected_day('monday')">Monday</button>
 
                 <button class = "button1" type=" button " onclick="set_selected_day('tuesday')">Tuesday</button>
@@ -43,9 +45,9 @@
 
                 <button class = "button2" type="button " onclick="set_selected_day('sunday')">Sunday</button>
 
-                <div id="time"></div>
 
 
+                <p> Choose time:</p>
                 <input id="slider" type="range" oninput="set_selected_time(this.value)" value="12" min="0" max="23" step="1" list="steplist">
                 <datalist id="steplist">
                     <option value="1" label="1">
