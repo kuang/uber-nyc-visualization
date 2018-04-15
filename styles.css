@@ -72,3 +72,18 @@ svg {
     width: 100%;
     padding: 10px;
 }
+
+/* tool tips */
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 90px;
+  height: 75px;
+  padding: 5px;
+  font: 12px sans-serif;
+  background: darkgray;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
