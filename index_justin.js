@@ -82,7 +82,7 @@ function set_selected_day(day) {
 }
 
 function set_selected_time(time) {
-    selected_time = time
+    selected_time = time;
     graphDots(selected_day, selected_time);
     graphTime(selected_day);
 }
@@ -138,6 +138,8 @@ function graphTime(day) {
 
 
 }
+
+
 
 function callback(
     error,
@@ -235,8 +237,6 @@ function callback(
             .attr("d", path);
         graphTime(selected_day);
         graphDots(selected_day, selected_time);
-
-
     });
 
 }
@@ -280,7 +280,8 @@ $(document).ready(function () {
     var map_svg = d3.select("svg");
 
     d3.queue()
-        .defer(d3.csv, "data/uber-raw-data-apr14.csv", parseUber)
+        // .defer(d3.csv, "data/uber-raw-data-apr14.csv", parseUber)
+        .defer(d3.csv, "data/uber_april_oneweek.csv", parseUber)
         .defer(d3.csv, "data/zip_medians.csv", parseIncome)
         .await(callback);
 });

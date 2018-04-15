@@ -150,7 +150,7 @@ $(document).ready(function () {
     d3.queue()
         .defer(d3.csv, "data/uber-raw-data-apr14.csv", parseUber)
         // .defer(d3.csv, "data/uber_test.csv", parseUber)
-        .defer(d3.csv, "data/zipcode_income.csv", parseIncome)
+        .defer(d3.csv, "data/zip_medians.csv", parseIncome)
         .await(callback);
 });
 
