@@ -144,7 +144,7 @@ function callback(
                div.transition()
                  .duration(200)
                  .style("opacity", .9);
-               div.html(lookup[d.properties.postalcode])
+               div.html("Zip Code:<br>" + d.properties.postalcode + "<br>Income:<br>$" + lookup[d.properties.postalcode])
                  .style("left", (d3.event.pageX) + "px")
                  .style("top", (d3.event.pageY - 28) + "px");
                })
