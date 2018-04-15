@@ -144,19 +144,17 @@ function callback(
     uber,
     income,
 ) {
-    //console.log(uber);
+
     if (error) console.log(error);
 
     var width = 600,
         height = 600,
         active = d3.select(null);
 
-
     var plot_width = 400,
         plot_height = 400;
 
     var padding = 70;
-
 
     var zoom = d3.zoom()
         .scaleExtent([1, 8])
@@ -193,13 +191,11 @@ function callback(
     var colorScale = d3.scaleLinear()
         .domain([1520, 219554])
         .range(["#006600", "#ffffff"]);
-    // console.log(colorScale(200000));
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
     var lookup = {};
     income.forEach(function (d) { lookup[d.zipcode] = +d.income; });
-    // console.log(lookup);
 
     plot_svg = d3.select("#time").append("svg")
         .attr("height", 300 + 2 * padding).attr("width", 300 + 2 * padding)
@@ -207,8 +203,6 @@ function callback(
 
 
     d3.json("data/nyc.json", function (error, uk) {
-        // console.log(uk);
-        // console.log(uk.objects);
         if (error) return console.error(error);
         var subunits = topojson.feature(uk, uk.objects.nyc_zip_code_areas);
 
@@ -263,8 +257,7 @@ function clicked(d) {
 
     map_svg.transition()
         .duration(750)
-        // .call(zoom.translate(translate).scale(scale).event); // not in d3 v4
-        .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)); // updated for d3 v4
+        .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 }
 
 
@@ -274,14 +267,12 @@ function reset() {
 
     map_svg.transition()
         .duration(750)
-        // .call( zoom.transform, d3.zoomIdentity.translate(0, 0).scale(1) ); // not in d3 v4
-        .call(zoom.transform, d3.zoomIdentity); // updated for d3 v4
+        .call(zoom.transform, d3.zoomIdentity);
 }
 
 function zoomed() {
     g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
-    // g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")"); // not in d3 v4
-    g.attr("transform", d3.event.transform); // updated for d3 v4
+    g.attr("transform", d3.event.transform);
 }
 
 // To make sure that elements don't generate before the DOM has loaded.
