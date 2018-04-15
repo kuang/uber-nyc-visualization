@@ -163,8 +163,6 @@ function callback(
         .append("g").attr("transform", "translate(" + padding + "," + padding + ")");
 
 
-
-
     projection = d3.geoAlbers()
         .center([0, 40.7])
         .rotate([74, 0])

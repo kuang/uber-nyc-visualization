@@ -10,9 +10,10 @@ data["friday"] = {};
 data["saturday"] = {};
 data["sunday"] = {};
 
-var svg, projection, selected_day, selected_time, zoom, g;
+var map_svg, plot_svg, projection, selected_day, selected_time, zoom, g;
+var xScale = d3.scaleLinear().domain([0, 23]).range([0, 300]);
 
-selected_time = 0; //testing, set to 0
+selected_time = 12; //testing, set to 0
 selected_day = "monday"; //default. we can at some point
 
 
@@ -59,7 +60,7 @@ function parseIncome(line) {
 
 //day is a string, time is an int 0-23
 function graphDots(day, time) {
-    svg.selectAll("circle").remove(); //removes previous circles
+    map_svg.selectAll("circle").remove(); //removes previous circles
     day = day.toLowerCase();
 
     data[day][time].forEach(function (d) {
@@ -77,11 +78,61 @@ function graphDots(day, time) {
 function set_selected_day(day) {
     selected_day = day;
     graphDots(day, selected_time);
+    graphTime(selected_day);
 }
 
 function set_selected_time(time){
     selected_time = time
     graphDots(selected_day, selected_time);
+    graphTime(selected_day);
+}
+
+
+function graphTime(day) {
+    plot_svg.selectAll("*").remove();
+
+    var max = Number.MIN_SAFE_INTEGER;
+    var min = Number.MAX_SAFE_INTEGER;
+    var time_lengths = [];
+    for (var i = 0; i < 24; i++) {
+        var curr_len = data[day][i].length;
+        if (curr_len > max)
+            max = curr_len;
+        if (curr_len < min)
+            min = curr_len;
+        time_lengths.push({
+            hour: i,
+            number: curr_len
+        });
+    }
+    var yScale = d3.scaleLinear().domain([min, max]).range([300, 0]);
+    var lineGenerator = d3.area()
+        .x(d => xScale(d.hour))
+        .y(d => yScale(d.number));
+
+    plot_svg.append("path")
+        .attr("d", lineGenerator(time_lengths))
+        .style("stroke", "#000000")
+        .style("fill", "none");
+
+    // Add axes
+    plot_svg.append("g").call(d3.axisLeft(yScale)).attr("transform", "translate(0,0)");
+    plot_svg.append("g").call(d3.axisBottom(xScale)).attr("transform", "translate(0," + (300) + ")");
+
+    plot_svg.append("text").attr("transform", "rotate(270) translate(-170, -50)").text("Number of Pickups");
+    plot_svg.append("text").attr("transform", "translate(150, 340)").text("Hour");
+
+    plot_svg.selectAll("dot").data(time_lengths)
+        .enter().append("circle")
+        .attr("r", 4)
+        .attr("cx", function (d) { return xScale(d.hour) })
+        .attr("cy", function (d) { return yScale(d.number) })
+        .style("fill", function (d) {
+            if (d.hour == selected_time) return "#00c4c8";
+            return "#ff6661";
+        })
+
+
 }
 
 function callback(
@@ -96,12 +147,19 @@ function callback(
         height = 600,
         active = d3.select(null);
 
+
+    var plot_width = 400,
+        plot_height = 400;
+
+    var padding = 70;
+
+
     var zoom = d3.zoom()
     .scaleExtent([1, 8])
     .on("zoom", zoomed);
 
 
-    svg = d3.select("#map").append("svg")
+    map_svg = d3.select("#map").append("svg")
         .attr("width", width)
         .attr("height", height);
 
@@ -114,15 +172,16 @@ function callback(
     var path = d3.geoPath()
         .projection(projection);
 
-    g = svg.append("g");
+    g = map_svg.append("g");
 
 
-    svg.append("rect")
+    map_svg.append("rect")
         .attr("class", "overlay")
         .attr("width", width)
         .attr("height", height);
 
-    svg.call(zoom);
+
+    map_svg.call(zoom);
 
 
     // coloring by income
@@ -130,14 +189,17 @@ function callback(
     var colorScale = d3.scaleLinear()
         .domain([1520, 219554])
         .range(["#006600", "#ffffff"]);
-    console.log(colorScale(200000));
+    // console.log(colorScale(200000));
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    // console.log(income);
     var lookup = {};
     income.forEach(function(d) { lookup[d.zipcode] = +d.income; });
-    console.log(lookup);
+    // console.log(lookup);
+
+    plot_svg = d3.select("#time").append("svg")
+        .attr("height", 300 + 2 * padding).attr("width", 300 + 2 * padding)
+        .append("g").attr("transform", "translate(" + padding + "," + padding + ")");
 
 
     d3.json("data/nyc.json", function (error, uk) {
@@ -146,8 +208,6 @@ function callback(
         if (error) return console.error(error);
         var subunits = topojson.feature(uk, uk.objects.nyc_zip_code_areas);
 
-        // g.selectAll("path")
-        // .data()
 
         g.append("path")
             .datum(subunits)
@@ -169,17 +229,10 @@ function callback(
 
 
         g.selectAll(".tract")
-    // bind data to the selection
         .data(topojson.feature(uk, uk.objects.nyc_zip_code_areas).features)
         .enter()
-        // set properties for the new elements:
         .append("path")
-        .attr('fill',function(d, i) { console.log(lookup[d.properties.postalcode]); return colorScale(lookup[d.properties.postalcode]); })
-        // .attr('fill',function(d, i) { console.log(d + ": " + i);return color(i); })
-        // .attr('fill','blue')
-        // .attr('fill',function(d,i) { return colorScale(lookup[d.postalcode]); })
-        //.attr('fill',function(d, i) { return color(i); })
-
+        .attr('fill',function(d, i) {return colorScale(lookup[d.properties.postalcode]); })
         .attr("class", "tract")
         .attr("d", path);
 
@@ -200,7 +253,7 @@ function clicked(d) {
       scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / width, dy / height))),
       translate = [width / 2 - scale * x, height / 2 - scale * y];
 
-  svg.transition()
+  map_svg.transition()
       .duration(750)
       // .call(zoom.translate(translate).scale(scale).event); // not in d3 v4
       .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) ); // updated for d3 v4
@@ -211,7 +264,7 @@ function reset() {
   active.classed("active", false);
   active = d3.select(null);
 
-  svg.transition()
+  map_svg.transition()
       .duration(750)
       // .call( zoom.transform, d3.zoomIdentity.translate(0, 0).scale(1) ); // not in d3 v4
       .call( zoom.transform, d3.zoomIdentity ); // updated for d3 v4
@@ -225,11 +278,11 @@ function zoomed() {
 
 // To make sure that elements don't generate before the DOM has loaded.
 $(document).ready(function () {
-    var svg = d3.select("svg");
+    var map_svg = d3.select("svg");
 
     d3.queue()
         .defer(d3.csv, "data/uber-raw-data-apr14.csv", parseUber)
-        .defer(d3.csv, "data/zipcode_income.csv", parseIncome)
+        .defer(d3.csv, "data/zip_medians.csv", parseIncome)
         .await(callback);
 });
 
