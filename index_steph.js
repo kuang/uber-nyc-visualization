@@ -107,9 +107,8 @@ function callback(
     // coloring by income
     // green to white color scale
     // TODO 
-    var colorScale = d3.scaleLinear()
-        .domain([1520, 219554])
-        .range(["#003200", "#ffffff"]);
+    var incomeColors = ["#ffffff", "#323299", "#329932"];
+    var colorScale = d3.scaleLinear().domain([18024, 85019, 219554]).range(incomeColors);
 
     // var color = d3.scaleOrdinal(d3.schemeCategory20);
 
