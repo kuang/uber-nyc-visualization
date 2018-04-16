@@ -238,6 +238,17 @@ function callback(
         graphTime(selected_day);
         graphDots(selected_day, selected_time);
     });
+    d3.json("data/subway.geojson", function (json) {
+
+        //Bind data and create one path per GeoJSON feature
+        map_svg.selectAll("path")
+            .data(json.features)
+            .enter()
+            .append("path")
+            .attr("d", path)
+            .style("fill", "black");
+
+    });
 
 }
 

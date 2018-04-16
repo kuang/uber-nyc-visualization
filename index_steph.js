@@ -96,7 +96,7 @@ function graphTime(day) {
     var min = Number.MAX_SAFE_INTEGER;
     var time_lengths = [];
     for (var i = 0; i < 24; i++) {
-        var curr_len = data[day][i].length;
+        var curr_len = data[day][i].length / 16;
         if (curr_len > max)
             max = curr_len;
         if (curr_len < min)
@@ -106,7 +106,7 @@ function graphTime(day) {
             number: curr_len
         });
     }
-    var yScale = d3.scaleLinear().domain([min, 1000]).range([300, 0]);
+    var yScale = d3.scaleLinear().domain([min, 500]).range([300, 0]);
     var lineGenerator = d3.area()
         .x(d => xScale(d.hour))
         .y(d => yScale(d.number));
@@ -120,7 +120,7 @@ function graphTime(day) {
     plot_svg.append("g").call(d3.axisLeft(yScale)).attr("transform", "translate(0,0)");
     plot_svg.append("g").call(d3.axisBottom(xScale)).attr("transform", "translate(0," + (300) + ")");
 
-    plot_svg.append("text").attr("transform", "rotate(270) translate(-170, -50)").text("Number of Pickups");
+    plot_svg.append("text").attr("transform", "rotate(270) translate(-270, -45)").text("Average Number of Pickups per hour");
     plot_svg.append("text").attr("transform", "translate(150, 340)").text("Hour");
 
     plot_svg.selectAll("dot").data(time_lengths)
@@ -213,16 +213,16 @@ function callback(
     //Set the color for the start (0%)
     linearGradient.append("stop")
         .attr("offset", "0%")
-        .attr("stop-color", "#ffffff"); 
+        .attr("stop-color", "#ffffff");
 
     linearGradient.append("stop")
         .attr("offset", "75%")
-        .attr("stop-color", "#5aad5a"); 
+        .attr("stop-color", "#5aad5a");
 
     //Set the color for the end (100%)
     linearGradient.append("stop")
         .attr("offset", "100%")
-        .attr("stop-color", "#1e5b1e"); 
+        .attr("stop-color", "#1e5b1e");
 
     var xcoord = 20;
     var ycoord = 80;
@@ -252,7 +252,7 @@ function callback(
         .attr("alignment-baseline", "middle")
         .attr("font-size", "14");
 
-     map_svg.append("text")
+    map_svg.append("text")
         .text("$219,554")
         .attr("x", xcoord + 205)
         .attr("y", ycoord + 40)
@@ -305,8 +305,8 @@ function callback(
             .data(topojson.feature(uk, uk.objects.nyc_zip_code_areas).features)
             .enter()
             .append("path")
-            .attr('fill', function (d, i) { 
-                if(lookup[d.properties.postalcode] == undefined) { return "white"; } 
+            .attr('fill', function (d, i) {
+                if (lookup[d.properties.postalcode] == undefined) { return "white"; }
                 else { return colorScale(lookup[d.properties.postalcode]); }
             })
             .attr("class", "tract")
@@ -357,8 +357,8 @@ $(document).ready(function () {
     var map_svg = d3.select("svg");
 
     d3.queue()
-        // .defer(d3.csv, "data/uber-raw-data-apr14.csv", parseUber)
-        .defer(d3.csv, "data/uber_april_oneweek.csv", parseUber)
+        .defer(d3.csv, "data/uber-raw-data-apr14.csv", parseUber)
+        // .defer(d3.csv, "data/uber_april_oneweek.csv", parseUber)
         .defer(d3.csv, "data/zip_medians.csv", parseIncome)
         .await(callback);
 });
@@ -375,7 +375,7 @@ $(document).ready(function () {
 //          .style("left", (d3.event.pageX) + "px")
 //          .style("top", (d3.event.pageY - 28) + "px");
 //     }
-   
+
 // })
 // .on("mouseout", function(d) {
 //     div.transition()
