@@ -79,6 +79,9 @@ function set_selected_day(day) {
     selected_day = day;
     graphDots(day, selected_time);
     graphTime(selected_day);
+    document.getElementById("currday").innerText = "Day Selected: " + selected_day;
+    document.getElementById("currtime").innerText = "Time Selected: " + selected_time;
+
 
 }
 
@@ -86,6 +89,8 @@ function set_selected_time(time) {
     selected_time = time;
     graphDots(selected_day, selected_time);
     graphTime(selected_day);
+    document.getElementById("currday").innerText = "Day Selected: " + selected_day;
+    document.getElementById("currtime").innerText = "Time Selected: " + selected_time;
 }
 
 
@@ -314,6 +319,8 @@ function callback(
 
         graphTime(selected_day);
         graphDots(selected_day, selected_time);
+        document.getElementById("currday").innerText = "Day Selected: " + selected_day;
+        document.getElementById("currtime").innerText = "Time Selected: " + selected_time;
     });
 
 }
