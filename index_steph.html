@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
 
+    <!-- google fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto|Slabo+27px" rel="stylesheet">
-
 
     <link rel="stylesheet" href="styles.css">
 
@@ -21,29 +21,69 @@
 
 <body>
     <div class="container">
-        <h1> Uber in NYC</h1>
+        <h1> <span class="green">Income Patterns</span> and <span class="gray">Uber Rides</span> in NYC </h1>
+        <p> Uber is supposed to be the future of transporation and even replacement for people who do not own cars. However, it seems that Uber is being used in higher-income locations in New York City.</p>
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-7" id="map">
                 <br>
-                <p>How is Uber affecting the way New Yorkers move?</p>
-                <div id="map" class=""></div>
+                <h2 class='left'>New York City Uber Pickups</h2>
+                <div id="map"></div>
+
+                <p class="caption">The most active and highest income locations in New York City appear to be in lower Manhattan.</p>
+
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-5" id="stats">
                 <br>
-                <h2 class='center'>Edit Date/Time</h2>
-                <button type="button" onclick="set_selected_day('monday')">Monday</button>
+                <h2 class='left'>Ride Statistics Per Day</h2>
+                <p class="caption">Peak pickup time each day is generally around 4pm, so we can assume people are going home from work. But rather than serving the areas that are not as wealthy and do not have as many subway stops, there is generally a large concentration pickups in lower Manhattan and Brooklyn.</p>
 
-                <button type=" button " onclick="set_selected_day('tuesday')">Tuesday</button>
+                <div id="time"></div>
 
-                <button type="button " onclick="set_selected_day('wednesday')">Wednesday</button>
+                <h4>Day of week:</h4>
+                <div id="date-buttons">
+                    <button class = "button1" type="button" onclick="set_selected_day('monday')">Mon.</button>
 
-                <button type="button " onclick="set_selected_day('thursday')">Thursday</button>
+                    <button class = "button1" type=" button " onclick="set_selected_day('tuesday')">Tues.</button>
 
-                <button type="button " onclick="set_selected_day('friday')">Friday</button>
+                    <button class = "button1" type="button " onclick="set_selected_day('wednesday')">Wed.</button>
 
-                <button type="button " onclick="set_selected_day('saturday')">Saturday</button>
+                    <button  class = "button1" type="button " onclick="set_selected_day('thursday')">Thurs.</button>
 
-                <button type="button " onclick="set_selected_day('sunday')">Sunday</button>
+                    <button class = "button1" type="button " onclick="set_selected_day('friday')">Fri.</button>
+
+                    <button class = "button2" type="button " onclick="set_selected_day('saturday')">Sat.</button>
+
+                    <button class = "button2" type="button " onclick="set_selected_day('sunday')">Sun.</button>
+                </div>
+
+
+                <h4> Time:</h4>
+                <input id="slider" type="range" oninput="set_selected_time(this.value)" value="12" min="0" max="23" step="1" list="steplist">
+                <datalist id="steplist">
+                    <option value="1" label="1">
+                    <option value="2" label="2">
+                    <option value="3" label="3">
+                    <option value="4" label="4">
+                    <option value="5" label="5">
+                    <option value="6" label="6">
+                    <option value="7" label="7">
+                    <option value="8" label="8">
+                    <option value="9" label="9">
+                    <option value="10" label="10">
+                    <option value="11" label="11">
+                    <option value="12" label="12">
+                    <option value="13" label="13">
+                    <option value="14" label="14">
+                    <option value="15" label="15">
+                    <option value="16" label="16">
+                    <option value="17" label="17">
+                    <option value="18" label="18">
+                    <option value="19" label="19">
+                    <option value="20" label="20">
+                    <option value="21" label="21">
+                </datalist>
+
+                
 
             </div>
         </div>
@@ -51,6 +91,8 @@
 
     </div>
     <script src="index_steph.js "></script>
+    <!-- tool tips? -->
+    <script src="d3-tip/d3-tip.js"></script>
 </body>
 
 

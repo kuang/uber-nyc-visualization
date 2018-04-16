@@ -3,10 +3,29 @@ body {
     font-family: 'Slabo 27px', serif;
     /*font-family: 'Barlow Condensed', Calibri, sans-serif;
     background-color: #D3D3D3;*/
+    padding: 5%;
 }
 
 h1 {
     font-family: 'Roboto';
+    font-weight: bold;
+}
+
+.green {
+  color: green;
+}
+
+.gray {
+  color: gray;
+}
+
+h2 {
+  font-family: 'Roboto';
+  font-weight: lighter;
+}
+
+p {
+  font-size: 18px;
 }
 
 
@@ -16,18 +35,23 @@ path {
 }
 
 .button1{
-    border-radius: 8px;
+    /*border-radius: 8px;*/
     border: 2px solid #4CAF50;
 }
 .button2{
-    border-radius: 8px;
+    /*border-radius: 8px;*/
     border: 2px solid #008CBA;
 }
 
 .button1:hover {
     background-color: #4CAF50;
-
 }
+
+.button1:checked {
+    background-color: #4CAF50;
+}
+
+
 .button2:hover {
     background-color: #008CBA;
 }
@@ -45,7 +69,7 @@ path {
 }
 
 svg {
-    background: #eee;
+    background: #f2f2f2;
 }
 
 .background {
@@ -73,8 +97,32 @@ svg {
     padding: 10px;
 }
 
-/* tool tips */
-div.tooltip {
+
+#time {
+  padding: 2% 0;
+}
+
+#stats p {
+  margin: 0;
+}
+
+#stats .caption {
+  margin: 5% 0;
+}
+
+#date-buttons {
+  text-align: center;
+  margin: 2% 0;
+}
+
+#date-buttons button {
+  margin: 1%;
+}
+
+
+
+/* old tool tips */
+/*div.tooltip {
   position: absolute;
   text-align: center;
   width: 90px;
@@ -85,5 +133,4 @@ div.tooltip {
   border: 0px;
   border-radius: 8px;
   pointer-events: none;
-}
-
+}*/
