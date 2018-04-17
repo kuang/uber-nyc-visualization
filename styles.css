@@ -117,12 +117,9 @@ svg {
   padding-bottom: 2%;
 }
 
-#stats p {
-  margin: 0;
-}
 
 #stats .caption {
-  margin: 5% 0;
+  margin-bottom: 8%;
 }
 
 #date-buttons {
@@ -132,6 +129,7 @@ svg {
 
 #date-buttons button {
   margin: 1%;
+  font-family: 'Roboto';
 }
 
 #date-time-label {

@@ -237,7 +237,7 @@ function callback(
         .attr("stop-color", "#1e5b1e");
 
     var xcoord = 20;
-    var ycoord = 80;
+    var ycoord = 55;
 
     //Draw the rectangle and fill with gradient
     map_svg.append("rect")
@@ -364,6 +364,7 @@ function zoomed() {
     g.attr("transform", d3.event.transform);
 }
 
+
 // To make sure that elements don't generate before the DOM has loaded.
 $(document).ready(function () {
     var map_svg = d3.select("svg");
@@ -373,6 +374,7 @@ $(document).ready(function () {
         // .defer(d3.csv, "data/uber_april_oneweek.csv", parseUber)
         .defer(d3.csv, "data/zip_medians.csv", parseIncome)
         .await(callback);
+
 });
 
 
