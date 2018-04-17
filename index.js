@@ -1,5 +1,3 @@
-
-
 var data = {};
 
 data["monday"] = {};
@@ -13,12 +11,12 @@ data["sunday"] = {};
 var map_svg, plot_svg, projection, selected_day, selected_time, zoom, g;
 var xScale = d3.scaleLinear().domain([0, 23]).range([0, 300]);
 
-selected_time = 12; //testing, set to 0
-selected_day = "monday"; //default. we can at some point
+// default date/time
+selected_time = 12;
+selected_day = "monday";
 
-
+// parse uber data
 function parseUber(line) {
-
     var ne = [40.91525559999999, -73.70027209999999];
     var sw = [40.4913686, -74.25908989999999];
 
@@ -36,7 +34,7 @@ function parseUber(line) {
         long: long,
     };
 
-    //sanity check
+    // filtering points only in NYC
     if (lat < ne[0] && lat > sw[0] && long < ne[1] && long > sw[1]) {
         //left of hudson check
         if (!(lat > se_hudson[0] && long < se_hudson[1])) {
@@ -45,10 +43,10 @@ function parseUber(line) {
                 data[day][time] = [];
             data[day][time].push(obj);
         }
-        // console.log(line);
     }
 }
 
+// parsing income data
 function parseIncome(line) {
     return {
         zipcode: line["Zip"],
@@ -65,7 +63,6 @@ function graphDots(day, time) {
 
     data[day][time].forEach(function (d) {
         var [cx, cy] = projection([d.long, d.lat]);
-        //console.log(cx, cy)
         g.append("circle")
             .attr("cx", cx)
             .attr("cy", cy)
@@ -75,25 +72,27 @@ function graphDots(day, time) {
     });
 }
 
+// select day of week
 function set_selected_day(day) {
     selected_day = day;
     graphDots(day, selected_time);
     graphTime(selected_day);
-    document.getElementById("currday").innerText = "Day Selected: " + selected_day;
-    document.getElementById("currtime").innerText = "Time Selected: " + selected_time;
 
-
+    document.getElementById("currday").innerText = capitalizeFirstLetter(selected_day) + ", ";
+    document.getElementById("currtime").innerText = selected_time + ":00"; 
 }
 
+// select time
 function set_selected_time(time) {
     selected_time = time;
     graphDots(selected_day, selected_time);
     graphTime(selected_day);
-    document.getElementById("currday").innerText = "Day Selected: " + selected_day;
-    document.getElementById("currtime").innerText = "Time Selected: " + selected_time;
+
+    document.getElementById("currday").innerText = capitalizeFirstLetter(selected_day) + ", ";
+    document.getElementById("currtime").innerText = selected_time + ":00";
 }
 
-
+// plot line graph 
 function graphTime(day) {
     plot_svg.selectAll("*").remove();
 
@@ -111,7 +110,7 @@ function graphTime(day) {
             number: curr_len
         });
     }
-    var yScale = d3.scaleLinear().domain([min, 500]).range([300, 0]);
+    var yScale = d3.scaleLinear().domain([min, 550]).range([300, 0]);
     var lineGenerator = d3.area()
         .x(d => xScale(d.hour))
         .y(d => yScale(d.number));
@@ -122,12 +121,24 @@ function graphTime(day) {
         .style("fill", "none");
 
     // Add axes
-    plot_svg.append("g").call(d3.axisLeft(yScale)).attr("transform", "translate(0,0)");
-    plot_svg.append("g").call(d3.axisBottom(xScale)).attr("transform", "translate(0," + (300) + ")");
+    plot_svg.append("g").call(d3.axisLeft(yScale)).attr("transform", "translate(0,0)")
+        .attr("font-family", "Roboto");
+    plot_svg.append("g").call(d3.axisBottom(xScale))
+        .attr("transform", "translate(0," + (300) + ")")
+        .attr("font-family", "Roboto");
 
-    plot_svg.append("text").attr("transform", "rotate(270) translate(-270, -45)").text("Average Number of Pickups per hour");
-    plot_svg.append("text").attr("transform", "translate(150, 340)").text("Hour");
+    // Add labels
+    plot_svg.append("text").attr("transform", "rotate(270) translate(-200, -45)").text("Average # Pickups");
+    plot_svg.append("text").attr("transform", "translate(120, 340)").text("Hour of Day");
+    plot_svg.append("text")
+        .text("New York City Uber Pickups, April 2014")
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("transform", "translate(165, -25)")
+        .attr("font-weight", "lighter")
+        .attr("font-size", "20px");
 
+    // Add dots
     plot_svg.selectAll("dot").data(time_lengths)
         .enter().append("circle")
         .attr("r", function (d) {
@@ -143,6 +154,11 @@ function graphTime(day) {
         })
 }
 
+// Make first letter capital
+// https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript
+function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 
 function callback(
@@ -150,7 +166,6 @@ function callback(
     uber,
     income,
 ) {
-
     if (error) console.log(error);
 
     var width = 600,
@@ -162,15 +177,10 @@ function callback(
 
     var padding = 70;
 
+    // to zooom in on nyc map
     var zoom = d3.zoom()
         .scaleExtent([1, 8])
         .on("zoom", zoomed);
-
-    // // tool tips?
-    // var div = d3.select("#map").append("div")
-    // .attr("class", "tooltip")
-    // .style("opacity", 0)
-    // .style("z-index", 20);
 
     map_svg = d3.select("#map").append("svg")
         .attr("width", width)
@@ -192,11 +202,8 @@ function callback(
         .attr("width", width)
         .attr("height", height);
 
-    map_svg.call(zoom);
-
-    // // tool tip ??
-    // map_svg.call(tip);
-
+    map_svg.call(zoom)
+        .call(zoom.transform, d3.zoomIdentity.translate(-320, -60).scale(1.8));
 
     // income coloring key
     var key_svg = d3.select("#key");
@@ -240,7 +247,7 @@ function callback(
         .attr("x", xcoord)
         .attr("y", ycoord);
 
-    //captions
+    // gradient labels
     map_svg.append("text")
         .text("Median Income Levels per Zip Code")
         .attr("x", xcoord + 15)
@@ -266,9 +273,7 @@ function callback(
         .attr("font-size", "14");
 
 
-
     // choropleth
-    // 450, 53544.5, 219554
     var incomeColors = ["#ffffff", "#5aad5a", "#1e5b1e"];
     var colorScale = d3.scaleLinear().domain([1341, 85019, 219554]).range(incomeColors);
 
@@ -319,8 +324,8 @@ function callback(
 
         graphTime(selected_day);
         graphDots(selected_day, selected_time);
-        document.getElementById("currday").innerText = "Day Selected: " + selected_day;
-        document.getElementById("currtime").innerText = "Time Selected: " + selected_time;
+        document.getElementById("currday").innerText = capitalizeFirstLetter(selected_day) + ", ";
+        document.getElementById("currtime").innerText = selected_time + ":00";
     });
 
 }
@@ -370,23 +375,4 @@ $(document).ready(function () {
         .await(callback);
 });
 
-
-
-// //old tooltip
-// .on("mouseover", function(d) {
-//    div.transition()
-//      .duration(200)
-//      .style("opacity", .9);
-//     if(lookup[d.properties.postalcode] != undefined) {
-//         div.html("<p class='bold'>Zip Code</p>" + d.properties.postalcode + "<p class='bold'>Median Income</p>$" + lookup[d.properties.postalcode])
-//          .style("left", (d3.event.pageX) + "px")
-//          .style("top", (d3.event.pageY - 28) + "px");
-//     }
-
-// })
-// .on("mouseout", function(d) {
-//     div.transition()
-//     .duration(500)
-//     .style("opacity", 0);
-// });
 

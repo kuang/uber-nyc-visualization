@@ -12,7 +12,7 @@
         crossorigin="anonymous">
 
     <!-- google fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto|Slabo+27px" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400|Slabo+27px" rel="stylesheet">
 
     <link rel="stylesheet" href="styles.css">
 
@@ -23,83 +23,69 @@
     <div class="container">
         <h1>
             <span class="green">Income Patterns</span> and
-            <span class="gray">Uber Rides</span> in NYC </h1>
-        <p> Uber is supposed to be the future of transporation and even replacement for people who do not own cars. However,
-            it seems that Uber is being used in higher-income locations in New York City.</p>
+            <span class="gray">Uber Rides</span> in NYC
+        </h1>
+            <p> Transporation Network Companies such as Uber have quickly become the norm of everyday, short-distance transportation in metropolitan areas. Eventually, the services by these companies may even replace car ownership– 
+                <a href="http://www.businessinsider.com/no-one-will-own-a-car-in-the-future-2017-5">
+                tech analysts predict 
+                </a> 
+            that using electric ride-shares will be four to 10 times cheaper per mile than buying a new car by 2021, giving the public more access to car-rides. But what progress is currently being made to make ride-sharing more accessible, to all levels of income?
+            </p>
         <div class="row">
-            <div class="col-lg-7" id="map">
+            <div class="col-lg-7">
                 <br>
                 <h2 class='left'>New York City Uber Pickups</h2>
+
+                <p class="caption">These data points are from April 2014. The most active and highest income locations in New York City appear to be in lower Manhattan, which is interestingly also the location of many subway stops.</p>
+
+                <!-- dyanmic label of date/time -->
+                <div id="date-time-label">
+                    <h3 id="currday"></h3>
+                    <h3 id="currtime"></h3>
+                </div>
+
+                <!-- svg of nyc-->
                 <div id="map"></div>
-
-                <p class="caption">The most active and highest income locations in New York City appear to be in lower Manhattan.</p>
-                <h3 id="currday">Day Selected:</h3>
-                <h3 id="currtime">Time Selected:</h3>
-
             </div>
             <div class="col-lg-5" id="stats">
                 <br>
                 <h2 class='left'>Ride Statistics Per Day</h2>
-                <p class="caption">Peak pickup time each day is generally around 4pm, so we can assume people are going home from work. But
-                    rather than serving the areas that are not as wealthy and do not have as many subway stops, there is
-                    generally a large concentration pickups in lower Manhattan and Brooklyn.</p>
+                <p class="caption">
+                    Peak pickup time each day is generally around 4pm, so we can assume people are going home from work. But regardless of time or day, rather than serving the areas that are not as wealthy and do not have as many subway stops, Ubers are picking up in higher income zipcodes.
+                </p>
 
-
+                <!-- svg of line graph -->
                 <div id="time"></div>
 
                 <h4>Day of week:</h4>
                 <div id="date-buttons">
                     <button class="button1" type="button" onclick="set_selected_day('monday')">Mon.</button>
-
                     <button class="button1" type=" button " onclick="set_selected_day('tuesday')">Tues.</button>
-
                     <button class="button1" type="button " onclick="set_selected_day('wednesday')">Wed.</button>
-
                     <button class="button1" type="button " onclick="set_selected_day('thursday')">Thurs.</button>
-
                     <button class="button1" type="button " onclick="set_selected_day('friday')">Fri.</button>
-
                     <button class="button2" type="button " onclick="set_selected_day('saturday')">Sat.</button>
-
                     <button class="button2" type="button " onclick="set_selected_day('sunday')">Sun.</button>
                 </div>
-
 
                 <h4> Time:</h4>
                 <input id="slider" type="range" oninput="set_selected_time(this.value)" value="12" min="0" max="23" step="1" list="steplist">
                 <datalist id="steplist">
-                    <option value="1">
-                        <option value="2">
-                            <option value="3">
-                                <option value="4">
-                                    <option value="5">
-                                        <option value="6">
-                                            <option value="7">
-                                                <option value="8">
-                                                    <option value="9">
-                                                        <option value="10">
-                                                            <option value="11">
-                                                                <option value="12">
-                                                                    <option value="13">
-                                                                        <option value="14">
-                                                                            <option value="15">
-                                                                                <option value="16">
-                                                                                    <option value="17">
-                                                                                        <option value="18">
-                                                                                            <option value="19">
-                                                                                                <option value="20">
-                                                                                                    <option value="21">
-                                                                                                        <option value="22">
-                                                                                                            <option value="23">
-
+                    <option value="1"/><option value="2"/><option value="3"/>
+                    <option value="4"/><option value="5"/><option value="6"/>
+                    <option value="7"/><option value="8"/><option value="9"/>
+                    <option value="10"/><option value="11"/><option value="12"/>
+                    <option value="13"/><option value="14"/><option value="15"/>
+                    <option value="16"/><option value="17"/><option value="18"/>
+                    <option value="19"/><option value="20"/><option value="21"/>
+                    <option value="22"/><option value="23"/>
                 </datalist>
             </div>
         </div>
     </div>
-    </div>
+    
     <script src="index.js"></script>
-    <!-- tool tips? -->
-    <script src="d3-tip/d3-tip.js"></script>
+
 </body>
 
 

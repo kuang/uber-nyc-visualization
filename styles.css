@@ -1,8 +1,6 @@
 body {
     font-family: 'Roboto', sans-serif;
     font-family: 'Slabo 27px', serif;
-    /*font-family: 'Barlow Condensed', Calibri, sans-serif;
-    background-color: #D3D3D3;*/
     padding: 5%;
 }
 
@@ -28,19 +26,37 @@ p {
   font-size: 18px;
 }
 
-
 path {
     stroke: white;
     stroke-width: 1;
 }
 
+#currday {
+  display: inline;
+  font-weight: bold;
+  color: orange;
+  padding-top: 1%;
+  padding-bottom: 1%;
+}
+
+#currtime {
+  display: inline;
+  font-weight: bold;
+  color: orange;
+  padding-right: 3%;
+  padding-top: 1%;
+  padding-bottom: 1%;
+}
+
+a, a:hover {
+  color: green;
+}
+
 .button1{
-    /*border-radius: 8px;*/
     border: 2px solid #4CAF50;
 }
 .button2{
-    /*border-radius: 8px;*/
-    border: 2px solid #008CBA;
+    border: 2px solid #005aff;
 }
 
 .button1:hover {
@@ -97,9 +113,8 @@ svg {
     padding: 10px;
 }
 
-
 #time {
-  padding: 2% 0;
+  padding-bottom: 2%;
 }
 
 #stats p {
@@ -119,18 +134,9 @@ svg {
   margin: 1%;
 }
 
-
-
-/* old tool tips */
-/*div.tooltip {
-  position: absolute;
-  text-align: center;
-  width: 90px;
-  height: 75px;
-  padding: 5px;
-  font: 12px sans-serif;
-  background: darkgray;
-  border: 0px;
-  border-radius: 8px;
-  pointer-events: none;
-}*/
+#date-time-label {
+  font-family: 'Roboto';
+  display: block;
+  text-align: left;
+  padding: 20px 0;
+}
