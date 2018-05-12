@@ -1,5 +1,5 @@
 
-# Income Patterns and Uber Rides in NYC
+# Income vs Uber Rides in NYC
 
 Ellin Hu (github.com/whocode), Stephanie Mark (github.com/stephmarky), Justin Kuang (github.com/kuang)
 
